@@ -17,7 +17,7 @@ def get_module_name():
         return info["project"]["top_module"]
     except Exception as e:
         print(f"Warning: Could not read module name from info.yaml: {e}")
-        return "top"  # fallback
+        return "tt_um_top"  # fallback
 
 
 def generate_tiny_tapeout_wrapper(amaranth_verilog, module_name=None):
