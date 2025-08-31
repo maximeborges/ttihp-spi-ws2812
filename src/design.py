@@ -10,7 +10,7 @@ class Blinky(Elaboratable):
     def elaborate(self, platform):
         m = Module()
         cnt = Signal(24)  # 24-bit free-running counter
-        m.d.sync += cnt.eq(cnt + 2)  # increments each clock
+        m.d.sync += cnt.eq(cnt + 1)  # increments each clock
         m.d.comb += self.led.eq(cnt[-1])  # toggle LED with MSB
         return m
 
@@ -71,31 +71,15 @@ endmodule
 
 
 if __name__ == "__main__":
-    try:
-        # Generate the Amaranth core module
-        top = Blinky()
-        amaranth_verilog = verilog.convert(top, ports=[top.led])
+    # Generate the Amaranth core module
+    top = Blinky()
+    amaranth_verilog = verilog.convert(top, ports=[top.led])
 
-        # Generate the complete Tiny Tapeout wrapper
-        complete_project = generate_tiny_tapeout_wrapper(amaranth_verilog)
+    # Generate the complete Tiny Tapeout wrapper
+    complete_project = generate_tiny_tapeout_wrapper(amaranth_verilog)
 
-        # Write to project.v (same directory as this script)
-        with open("project.v", "w") as f:
-            f.write(complete_project)
+    # Write to project.v (same directory as this script)
+    with open("project.v", "w") as f:
+        f.write(complete_project)
 
-        print("✅ Generated project.v from Amaranth design!")
-        print("🔧 Your blinky is now automatically wrapped for Tiny Tapeout!")
-
-        # Also save the raw Amaranth output for reference
-        with open("amaranth_core.v", "w") as f:
-            f.write(amaranth_verilog)
-
-        print("📝 Amaranth core saved to amaranth_core.v for reference")
-
-    except ImportError:
-        print("❌ Amaranth not installed.")
-        print("💡 Install with: pip install amaranth")
-        print("🔄 Keeping existing project.v unchanged")
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        print("🔄 Keeping existing project.v unchanged")
+    print("✅ Generated project.v from Amaranth design!")
