@@ -2,7 +2,6 @@ name: test
 on: 
   push:
     paths-ignore:
-      - 'src/design.py'      # generate.yaml handles design.py changes
       - '*.md'               # don't test on documentation changes
       - 'docs/**'            # don't test on docs changes
   workflow_dispatch:
