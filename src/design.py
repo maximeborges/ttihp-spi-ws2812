@@ -10,7 +10,7 @@ class SetResetGate(Elaboratable):
     def __init__(self):
         self.set = Signal()  # set input
         self.reset = Signal()  # reset input
-        self.output = Signal()  # output
+        self.q = Signal()  # output (renamed from 'output' to avoid reserved keyword)
 
     def elaborate(self, platform):
         m = Module()
@@ -21,9 +21,9 @@ class SetResetGate(Elaboratable):
         # When both=0: maintain previous state
         # When both=1: reset takes priority (output=0)
         with m.If(self.reset):
-            m.d.sync += self.output.eq(0)
+            m.d.sync += self.q.eq(0)
         with m.Elif(self.set):
-            m.d.sync += self.output.eq(1)
+            m.d.sync += self.q.eq(1)
         # If neither set nor reset, output maintains its state
 
         return m
@@ -81,7 +81,7 @@ module {module_name} (
     .rst(rst),
     .set(ui_in[0]),     // Set input from ui_in[0]
     .reset(ui_in[1]),   // Reset input from ui_in[1]
-    .output(core_output)
+    .q(core_output)     // Output signal (renamed from 'output' to avoid reserved keyword)
   );
   
   // Connect core output to Tiny Tapeout output
@@ -107,7 +107,7 @@ endmodule
 if __name__ == "__main__":
     # Generate the Amaranth core module
     top = SetResetGate()
-    amaranth_verilog = verilog.convert(top, ports=[top.set, top.reset, top.output])
+    amaranth_verilog = verilog.convert(top, ports=[top.set, top.reset, top.q])
 
     # Generate the complete Tiny Tapeout wrapper (module name read from info.yaml)
     complete_project = generate_tiny_tapeout_wrapper(amaranth_verilog)
