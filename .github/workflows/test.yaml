@@ -1,5 +1,11 @@
 name: test
-on: [push, workflow_dispatch]
+on: 
+  push:
+    paths-ignore:
+      - 'src/design.py'      # generate.yaml handles design.py changes
+      - '*.md'               # don't test on documentation changes
+      - 'docs/**'            # don't test on docs changes
+  workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -21,7 +27,12 @@ jobs:
 
       - name: Install Python packages
         shell: bash
-        run: pip install -r test/requirements.txt
+        run: |
+          pip install -r test/requirements.txt
+          pip install amaranth
+
+      - name: Generate project.v from Amaranth
+        run: cd src && python3 design.py
 
       - name: Run tests
         run: |
