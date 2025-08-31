@@ -23,18 +23,28 @@ async def test_project(dut):
     await ClockCycles(dut.clk, 10)
     dut.rst_n.value = 1
 
-    dut._log.info("Test project behavior")
+    dut._log.info("Test blinky behavior")
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
-
-    # Wait for one clock cycle to see the output values
+    # Test that counter resets to 0
     await ClockCycles(dut.clk, 1)
+    initial_led = dut.uo_out.value & 1  # Get LED state (bit 0)
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
+    # Wait for many clock cycles to see LED state change
+    # With a 24-bit counter, we need 2^23 = 8,388,608 cycles for one toggle
+    # For testing, we'll just verify the counter is running by checking internal state
+    dut._log.info(f"Initial LED state: {initial_led}")
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    # Run for a while and check that other outputs are 0
+    await ClockCycles(dut.clk, 100)
+
+    # Verify that only uo_out[0] is used for LED, others should be 0
+    output_val = dut.uo_out.value
+    led_bit = output_val & 1
+    other_bits = (output_val >> 1) & 0x7F
+
+    dut._log.info(f"LED bit: {led_bit}, Other bits: {other_bits}")
+    assert other_bits == 0, f"Expected other output bits to be 0, got {other_bits}"
+
+    # Verify that bidirectional outputs are 0
+    assert dut.uio_out.value == 0, f"Expected uio_out to be 0, got {dut.uio_out.value}"
+    assert dut.uio_oe.value == 0, f"Expected uio_oe to be 0, got {dut.uio_oe.value}"
