@@ -10,7 +10,7 @@ class Blinky(Elaboratable):
     def elaborate(self, platform):
         m = Module()
         cnt = Signal(24)  # 24-bit free-running counter
-        m.d.sync += cnt.eq(cnt + 1)  # increments each clock
+        m.d.sync += cnt.eq(cnt + 2)  # increments each clock
         m.d.comb += self.led.eq(cnt[-1])  # toggle LED with MSB
         return m
 
