@@ -28,7 +28,7 @@ jobs:
 
       - name: Install Amaranth
         shell: bash
-        run: pip install amaranth
+        run: pip install amaranth amaranth-yosys
 
       - name: Generate project.v from Amaranth
         run: |
