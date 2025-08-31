@@ -6,7 +6,7 @@ from .spi import SPICommandInterface
 from .ws2811 import WS2811
 
 
-class Top(wiring.Component):
+class Top(Elaboratable):
     """
     Top-level module containing the WS2812 driver and SPI interface.
 
@@ -23,13 +23,21 @@ class Top(wiring.Component):
         Up to 16x WS2812 outputs
     """
 
-    clk: In(1)
-    rst: In(1)
-    cs: In(1)
-    copi: In(1)
-    out0: Out(1)
+    # clk: In(1)
+    # rst: In(1)
+    # cs: In(1)
+    # copi: In(1)
+    # out0: Out(1)
 
     def __init__(self):
+        self.clk = Signal(1)
+        self.rst = Signal(1)
+
+        self.cs = Signal(1)
+        self.copi = Signal(1)
+
+        self.out0 = Signal(1)
+
         self.word_size = Signal(6)
 
         self.spi = SPICommandInterface()
