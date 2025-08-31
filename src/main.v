@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2024 Your Name
+ * By Maxime Borges <contact@maximeborg.es>
+ * Unlicensed
  * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none
 
-module tt_um_example (
+module tt_um_mborges_spi2ws2812x16 (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -23,5 +24,4 @@ module tt_um_example (
 
   // List all unused inputs to prevent warnings
   wire _unused = &{ena, clk, rst_n, 1'b0};
-
 endmodule
