@@ -63,7 +63,7 @@ module top(rst, led, clk);
   (* src = "/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/amaranth/hdl/_ir.py:283" *)
   input rst;
   wire rst;
-  assign \$1  = cnt + (* src = "/home/runner/work/ttihp-verilog-test/ttihp-verilog-test/src/design.py:13" *) 1'h1;
+  assign \$1  = cnt + (* src = "/home/runner/work/ttihp-verilog-test/ttihp-verilog-test/src/design.py:13" *) 2'h2;
   (* src = "/home/runner/work/ttihp-verilog-test/ttihp-verilog-test/src/design.py:12" *)
   always @(posedge clk)
     cnt <= \$2 ;
