@@ -18,9 +18,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Amaranth
+      - name: Install dependencies
         shell: bash
-        run: pip install amaranth amaranth-yosys
+        run: pip install -r requirements.txt
 
       - name: Generate project.v from Amaranth
         run: |

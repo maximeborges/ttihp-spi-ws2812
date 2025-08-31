@@ -1,0 +1,10 @@
+# Core Amaranth dependencies for HDL design
+amaranth
+amaranth-yosys
+
+# YAML parsing for configuration
+PyYAML
+
+# Testing dependencies
+pytest==8.3.4
+cocotb==1.9.2

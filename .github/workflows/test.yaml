@@ -26,9 +26,7 @@ jobs:
 
       - name: Install Python packages
         shell: bash
-        run: |
-          pip install -r test/requirements.txt
-          pip install amaranth amaranth-yosys
+        run: pip install -r requirements.txt
 
       - name: Generate project.v from Amaranth
         run: cd src && python3 design.py

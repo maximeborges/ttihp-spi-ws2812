@@ -1,29 +1,61 @@
 # design.py - Automated Tiny Tapeout project generator
+import os
+
+import yaml
 from amaranth import Elaboratable, Module, Signal
 from amaranth.back import verilog
 
 
-class Blinky(Elaboratable):
+class SetResetGate(Elaboratable):
     def __init__(self):
-        self.led = Signal()  # output pin
+        self.set = Signal()  # set input
+        self.reset = Signal()  # reset input
+        self.output = Signal()  # output
 
     def elaborate(self, platform):
         m = Module()
-        cnt = Signal(24)  # 24-bit free-running counter
-        m.d.sync += cnt.eq(cnt + 1)  # increments each clock
-        m.d.comb += self.led.eq(cnt[-1])  # toggle LED with MSB
+
+        # SR latch logic
+        # When set=1: output=1
+        # When reset=1: output=0
+        # When both=0: maintain previous state
+        # When both=1: reset takes priority (output=0)
+        with m.If(self.reset):
+            m.d.sync += self.output.eq(0)
+        with m.Elif(self.set):
+            m.d.sync += self.output.eq(1)
+        # If neither set nor reset, output maintains its state
+
         return m
 
 
-def generate_tiny_tapeout_wrapper(amaranth_verilog, module_name="tt_um_blinky"):
+def get_module_name():
+    """Read the top module name from info.yaml"""
+    try:
+        # Go up one directory to find info.yaml
+        info_yaml_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "info.yaml"
+        )
+        with open(info_yaml_path, "r") as f:
+            info = yaml.safe_load(f)
+        return info["project"]["top_module"]
+    except Exception as e:
+        print(f"Warning: Could not read module name from info.yaml: {e}")
+        return "tt_um_set_reset_gate"  # fallback
+
+
+def generate_tiny_tapeout_wrapper(amaranth_verilog, module_name=None):
     """Convert Amaranth-generated Verilog to Tiny Tapeout compatible format"""
+
+    if module_name is None:
+        module_name = get_module_name()
 
     # Simple wrapper template that instantiates the Amaranth core
     wrapper = f"""/*
  * Copyright (c) 2024 Mario Geiger
  * SPDX-License-Identifier: Apache-2.0
  * 
- * Auto-generated from Amaranth design
+ * Auto-generated from Amaranth design - Set-Reset Gate
  */
 
 `default_nettype none
@@ -41,17 +73,19 @@ module {module_name} (
 
   // Internal signals for the Amaranth-generated core
   wire rst = !rst_n;  // Convert active-low reset to active-high
-  wire core_led;
+  wire core_output;
   
   // Instantiate the Amaranth-generated core module
   top core (
     .clk(clk),
     .rst(rst),
-    .led(core_led)
+    .set(ui_in[0]),     // Set input from ui_in[0]
+    .reset(ui_in[1]),   // Reset input from ui_in[1]
+    .output(core_output)
   );
   
-  // Connect core LED output to Tiny Tapeout output
-  assign uo_out[0] = core_led;
+  // Connect core output to Tiny Tapeout output
+  assign uo_out[0] = core_output;
   
   // All other output pins must be assigned to 0 when not used
   assign uo_out[7:1] = 7'b0;
@@ -59,7 +93,7 @@ module {module_name} (
   assign uio_oe  = 8'b0;
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{{ena, ui_in, uio_in, 1'b0}};
+  wire _unused = &{{ena, ui_in[7:2], uio_in, 1'b0}};
 
 endmodule
 
@@ -72,14 +106,16 @@ endmodule
 
 if __name__ == "__main__":
     # Generate the Amaranth core module
-    top = Blinky()
-    amaranth_verilog = verilog.convert(top, ports=[top.led])
+    top = SetResetGate()
+    amaranth_verilog = verilog.convert(top, ports=[top.set, top.reset, top.output])
 
-    # Generate the complete Tiny Tapeout wrapper
+    # Generate the complete Tiny Tapeout wrapper (module name read from info.yaml)
     complete_project = generate_tiny_tapeout_wrapper(amaranth_verilog)
 
     # Write to project.v (same directory as this script)
     with open("project.v", "w") as f:
         f.write(complete_project)
 
-    print("✅ Generated project.v from Amaranth design!")
+    print(
+        f"✅ Generated project.v from Amaranth Set-Reset Gate design! Module: {get_module_name()}"
+    )
