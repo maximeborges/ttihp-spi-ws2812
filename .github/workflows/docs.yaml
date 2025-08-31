@@ -13,5 +13,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        shell: bash
+        run: pip install -r requirements.txt
+
+      - name: Generate project.v from Amaranth
+        run: |
+          cd src && python3 design.py
+          echo "Generated project.v from src/design.py"
+
       - name: Build docs
         uses: TinyTapeout/tt-gds-action/docs@ttihp25b
