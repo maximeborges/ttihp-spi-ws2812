@@ -27,7 +27,7 @@ jobs:
         run: uv sync
 
       - name: Generate project.v from Amaranth
-        run: python3 main.py
+        run: uv run python3 main.py
 
       - name: Run tests
         run: |

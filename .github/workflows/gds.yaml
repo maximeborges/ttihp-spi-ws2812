@@ -23,7 +23,7 @@ jobs:
 
       - name: Generate project.v from Amaranth
         run: |
-          uv run python3 main.py
+          uv run python main.py
           echo "Generated project.v from main.py"
 
       - name: Build GDS
