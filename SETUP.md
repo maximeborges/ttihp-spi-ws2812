@@ -61,12 +61,12 @@ sudo apt-get update && sudo apt-get install -y iverilog
 ### 2. Install Python Dependencies
 ```bash
 # From project root:
-pip install -r requirements.txt
+uv sync
 ```
 
 ### 3. Generate Verilog
 ```bash
-cd src && python design.py
+uv run python main.py
 ```
 
 ### 4. Run Tests

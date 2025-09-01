@@ -1,0 +1,1 @@
+MAX_WORD_WIDTH = 48

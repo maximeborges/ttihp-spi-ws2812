@@ -29,7 +29,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Generate project.v from Amaranth
-        run: cd src && python3 design.py
+        run: cd src && python3 main.py
 
       - name: Run tests
         run: |

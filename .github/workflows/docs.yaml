@@ -6,26 +6,20 @@ on:
 
 jobs:
   docs:
-    runs-on: ubuntu-24.04
+    runs-on: ghcr.io/astral-sh/uv:python3.12-bookworm
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - name: Install dependencies
-        shell: bash
-        run: pip install -r requirements.txt
+        run: uv sync
 
-      - name: Generate project.v from Amaranth
+      - name: Generate Verilog from Amaranth
         run: |
-          cd src && python3 design.py
-          echo "Generated project.v from src/design.py"
+          uv run main.py
+          echo "Generated  from main.py"
 
       - name: Build docs
         uses: TinyTapeout/tt-gds-action/docs@ttihp25b

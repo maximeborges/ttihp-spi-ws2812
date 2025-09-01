@@ -24,8 +24,8 @@ jobs:
 
       - name: Generate project.v from Amaranth
         run: |
-          cd src && python3 design.py
-          echo "Generated project.v from src/design.py"
+          cd src && python3 main.py
+          echo "Generated project.v from src/main.py"
 
       - name: Build GDS
         uses: TinyTapeout/tt-gds-action@ttihp25b

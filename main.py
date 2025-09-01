@@ -1,40 +1,17 @@
-# design.py - Automated Tiny Tapeout project generator
+# main.py - Automated Tiny Tapeout project generator
 import os
 
 import yaml
-from amaranth import Elaboratable, Module, Signal
 from amaranth.back import verilog
 
-
-class SetResetGate(Elaboratable):
-    def __init__(self):
-        self.set = Signal()  # set input
-        self.reset = Signal()  # reset input
-        self.q = Signal()  # output (renamed from 'output' to avoid reserved keyword)
-
-    def elaborate(self, platform):
-        m = Module()
-
-        # SR latch logic
-        # When set=1: output=1
-        # When reset=1: output=0
-        # When both=0: maintain previous state
-        # When both=1: reset takes priority (output=0)
-        with m.If(self.reset):
-            m.d.sync += self.q.eq(0)
-        with m.Elif(self.set):
-            m.d.sync += self.q.eq(1)
-        # If neither set nor reset, output maintains its state
-
-        return m
-
+from src.project import Top
 
 def get_module_name():
     """Read the top module name from info.yaml"""
     try:
         # Go up one directory to find info.yaml
         info_yaml_path = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "info.yaml"
+            os.path.dirname(__file__), "info.yaml"
         )
         with open(info_yaml_path, "r") as f:
             info = yaml.safe_load(f)
@@ -79,9 +56,11 @@ module {module_name} (
   top core (
     .clk(clk),
     .rst(rst),
-    .set(ui_in[0]),     // Set input from ui_in[0]
-    .reset(ui_in[1]),   // Reset input from ui_in[1]
-    .q(core_output)     // Output signal (renamed from 'output' to avoid reserved keyword)
+    
+    .cs(ui_in[0]),
+    .copi(ui_in[1]),
+    
+    .out0(uo_out[0])
   );
   
   // Connect core output to Tiny Tapeout output
@@ -106,16 +85,14 @@ endmodule
 
 if __name__ == "__main__":
     # Generate the Amaranth core module
-    top = SetResetGate()
-    amaranth_verilog = verilog.convert(top, ports=[top.set, top.reset, top.q])
+    top = Top()
+    amaranth_verilog = verilog.convert(top, ports=[top.clk, top.rst, top.cs, top.copi, top.out0])
 
     # Generate the complete Tiny Tapeout wrapper (module name read from info.yaml)
     complete_project = generate_tiny_tapeout_wrapper(amaranth_verilog)
 
-    # Write to project.v (same directory as this script)
-    with open("project.v", "w") as f:
+    # Write to verilog (same directory as this script)
+    with open("src/project.v", "w") as f:
         f.write(complete_project)
 
-    print(
-        f"✅ Generated project.v from Amaranth Set-Reset Gate design! Module: {get_module_name()}"
-    )
+    print(f"✅ Generated src/project.v from Amaranth Set-Reset Gate design! Module: {get_module_name()}")
