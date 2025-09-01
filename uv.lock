@@ -17,6 +17,17 @@ wheels = [
 ]
 
 [[package]]
+name = "amaranth-yosys"
+version = "0.50.0.0.post115"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "wasmtime" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1e/58/ac549b1d8d25205a21d008886fe04cd8d475426b120b8660b25f996d65c7/amaranth_yosys-0.50.0.0.post115-py3-none-any.whl", hash = "sha256:a37253df4c1b782dc981430e38f796165b58de13e158e21160ae043105d38ba0", size = 11064311, upload-time = "2025-08-21T01:59:25.142Z" },
+]
+
+[[package]]
 name = "cocotb"
 version = "1.9.2"
 source = { registry = "https://pypi.org/simple" }
@@ -48,6 +59,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/16/19/edd1da36c129fea75b82c3c079fc8ba72de945515364d660962e5c922ae3/find_libpython-0.4.1.tar.gz", hash = "sha256:7e6edbbaaa8648c8c7c13c54b127653c83cfb01a853db7e5b1ee2e97c10b2353", size = 9005, upload-time = "2025-05-31T21:32:51.512Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/02/6f/a3248471536a785379969642604fe7ff576520a8b4d4f820ecfd45639f35/find_libpython-0.4.1-py3-none-any.whl", hash = "sha256:22e522957e05f293c3403d0122c77d18007c5196f61054905c480e01b75fa236", size = 8751, upload-time = "2025-05-31T21:32:50.171Z" },
+]
+
+[[package]]
+name = "importlib-resources"
+version = "6.5.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/8c/f834fbf984f691b4f7ff60f50b514cc3de5cc08abfc3295564dd89c5e2e7/importlib_resources-6.5.2.tar.gz", hash = "sha256:185f87adef5bcc288449d98fb4fba07cea78bc036455dd44c5fc4a2fe78fed2c", size = 44693, upload-time = "2025-01-03T18:51:56.698Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/ed/1f1afb2e9e7f38a545d628f864d562a5ae64fe6f7a10e28ffb9b185b4e89/importlib_resources-6.5.2-py3-none-any.whl", hash = "sha256:789cfdc3ed28c78b67a06acb8126751ced69a3d5f79c095a98298cd8a760ccec", size = 37461, upload-time = "2025-01-03T18:51:54.306Z" },
 ]
 
 [[package]]
@@ -195,6 +215,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "amaranth" },
+    { name = "amaranth-yosys" },
     { name = "cocotb" },
     { name = "pytest" },
     { name = "pyyaml" },
@@ -203,7 +224,29 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "amaranth", specifier = ">=0.5.7" },
+    { name = "amaranth-yosys", specifier = ">=0.50.0.0.post115" },
     { name = "cocotb", specifier = ">=1.9.2" },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "pyyaml", specifier = ">=6.0.2" },
+]
+
+[[package]]
+name = "wasmtime"
+version = "36.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "importlib-resources" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6b/68/231035f96ba0798c0088b1ab0aa59403f5ec6b2fde2cbd5930d95acad7ff/wasmtime-36.0.0.tar.gz", hash = "sha256:e0523be4b2ebb1344a387fb4ce054a62acbcbc19671a7e7eeb166355d2f3004c", size = 147386, upload-time = "2025-08-20T17:33:11.103Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7a/3b/33fccbb066bcc84f195d0f6c6b4e038f4df8bf9596d24478fa143a7e4f27/wasmtime-36.0.0-py3-none-android_26_arm64_v8a.whl", hash = "sha256:eab97e2a54fcfd074dcbddf38d7397a0411914802e072f4fd30ed41c2a5604fe", size = 8649185, upload-time = "2025-08-20T17:32:51.925Z" },
+    { url = "https://files.pythonhosted.org/packages/12/a9/60bdd9fe50daba4562b4d11e8cd156e7774ccc69fc87f1cd47ec3bd5aca3/wasmtime-36.0.0-py3-none-android_26_x86_64.whl", hash = "sha256:72c2186c11b255ea8c6874320973712eceb384f5d68594de4348e2a169437af0", size = 9366812, upload-time = "2025-08-20T17:32:53.903Z" },
+    { url = "https://files.pythonhosted.org/packages/a4/85/5654a332a7f51108a672898414c2009cf362b268b514bae02b3f106c02b2/wasmtime-36.0.0-py3-none-any.whl", hash = "sha256:d1e41c3f832752982aced040168b4cea1144c39a5ed43882791b2e2975145ee3", size = 7588263, upload-time = "2025-08-20T17:32:55.935Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/65/abf6a435bba624b005d5d6ea3fb9285be662aa3ac7a80f97aeb29b1e1d60/wasmtime-36.0.0-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:a8ff3bf20f84f3f092ef7bf216afa2706e496ef3e190fb90b88b13b9529ed035", size = 9006605, upload-time = "2025-08-20T17:32:57.658Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/52/297b9982b135e43ef060f899227aa5e0b3798198f17ee1e0f806bd247fcc/wasmtime-36.0.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:6396ca0178ceffb17464e3cf2b4beae0e0b1da5c95aa5d27ff094f2a7f41106e", size = 7881396, upload-time = "2025-08-20T17:32:59.857Z" },
+    { url = "https://files.pythonhosted.org/packages/b1/63/cc69b41d6db6522adfc79627e7b9ad83d44797d525aae2a53f62d47d6e3e/wasmtime-36.0.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:bca67a384a64a5d9164ebc48c106862881a6d2af67d0740ed29cc50847cbe6f5", size = 9691244, upload-time = "2025-08-20T17:33:01.364Z" },
+    { url = "https://files.pythonhosted.org/packages/9b/fa/d8a27f073757bd2261455017c9c28f1d7343468931048f35c3f23a4f1b83/wasmtime-36.0.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:cd6f69bb744096b9bcca17863c463a96d08af86db1ccc0d74206a33892fac887", size = 8666149, upload-time = "2025-08-20T17:33:03.553Z" },
+    { url = "https://files.pythonhosted.org/packages/9d/49/70f70d13dedc783b5894ab1f11bd696f0f1c0e8faabc6ae422ce5eb91a67/wasmtime-36.0.0-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:5ea87199a35616848e20060f3cc00c22d4b2a919fd72bdea4c62b6503ac2bccc", size = 9689298, upload-time = "2025-08-20T17:33:05.642Z" },
+    { url = "https://files.pythonhosted.org/packages/ba/7d/0b45d172feba7488e67bf85f8f4254dd8c1dc99d6c1a3b9aa410f7a2d907/wasmtime-36.0.0-py3-none-win_amd64.whl", hash = "sha256:1e826960c02cbcf74cb91de41b63ff55ad6c9260e684fd4c315736b607642934", size = 7588270, upload-time = "2025-08-20T17:33:07.858Z" },
+    { url = "https://files.pythonhosted.org/packages/cf/d5/6b59a7f194940e6cdece2516e46f919c006e639a85854dd548799e3d884f/wasmtime-36.0.0-py3-none-win_arm64.whl", hash = "sha256:de932f23d257917652358093226315aeed21a262fdc124fff3486d5dfa62b40b", size = 6604726, upload-time = "2025-08-20T17:33:09.642Z" },
 ]

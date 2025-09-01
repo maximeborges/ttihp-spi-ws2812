@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "amaranth>=0.5.7",
+    "amaranth-yosys>=0.50.0.0.post115",
     "cocotb>=1.9.2",
     "pytest>=8.4.1",
     "pyyaml>=6.0.2",
