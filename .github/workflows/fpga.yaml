@@ -8,12 +8,16 @@ on:
 
 jobs:
   fpga:
-    runs-on: ghcr.io/astral-sh/uv:python3.12-bookworm
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Install uv
+        shell: bash
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
       - name: Install dependencies
         shell: bash
