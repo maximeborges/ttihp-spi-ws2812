@@ -50,7 +50,6 @@ module {module_name} (
 
   // Internal signals for the Amaranth-generated core
   wire rst = !rst_n;  // Convert active-low reset to active-high
-  wire core_output;
   
   // Instantiate the Amaranth-generated core module
   top core (
@@ -60,14 +59,10 @@ module {module_name} (
     .cs(ui_in[0]),
     .copi(ui_in[1]),
     
-    .out0(uo_out[0])
+    .out(uo_out)
   );
   
-  // Connect core output to Tiny Tapeout output
-  assign uo_out[0] = core_output;
-  
   // All other output pins must be assigned to 0 when not used
-  assign uo_out[7:1] = 7'b0;
   assign uio_out = 8'b0;
   assign uio_oe  = 8'b0;
 
@@ -86,7 +81,7 @@ endmodule
 if __name__ == "__main__":
     # Generate the Amaranth core module
     top = Top()
-    amaranth_verilog = verilog.convert(top, ports=[top.clk, top.rst, top.cs, top.copi, top.out0])
+    amaranth_verilog = verilog.convert(top, ports=[top.cs, top.copi, top.out])
 
     # Generate the complete Tiny Tapeout wrapper (module name read from info.yaml)
     complete_project = generate_tiny_tapeout_wrapper(amaranth_verilog)

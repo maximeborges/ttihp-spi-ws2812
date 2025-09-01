@@ -12,21 +12,22 @@ from .shared import MAX_WORD_WIDTH
 
 # Split the send of each bit of data into 3 cycles
 # First is always high, second is high for a 1 and low for a 0, third is always low
-CYCLE_LEN_HIGH = 2
-CYCLE_LEN_LOW = 1
+CYCLE_LEN_HIGH = 32
+CYCLE_LEN_LOW = 16
 CYCLE_LEN = CYCLE_LEN_HIGH + CYCLE_LEN_LOW
 
 
 class WS2811(Elaboratable):
     def __init__(self):
         # I / O
-        self.clk = Signal()
+        self.word_width = Signal(6)
 
-        self.word_size = Signal()
-
-        self.enable = Signal()
+        self.enable = Signal(init=0)
         self.data_in = Signal(MAX_WORD_WIDTH)
         self.data_out = Signal()
+        
+        # Status
+        self.idle = Signal()
 
     def elaborate(self, platform: Platform) -> Module:
         m = Module()
@@ -36,43 +37,61 @@ class WS2811(Elaboratable):
         current_bit = Signal()
 
         bit_counter = Signal(ceil(log2(MAX_WORD_WIDTH)))
-        cycle_counter = Signal(2)
+        cycle_counter = Signal(ceil(log2(CYCLE_LEN)))
 
         m.d.comb += [
             current_bit.eq(data_in.bit_select(bit_counter, 1)),
         ]
 
-        with m.FSM():
+        with m.FSM() as fsm:
+            m.d.comb += [
+                self.idle.eq(fsm.ongoing("IDLE")),
+            ]
+
             with m.State("IDLE"):
                 m.d.comb += [
                     self.data_out.eq(0),
                 ]
                 
                 with m.If(self.enable):
-                    m.d.sync += [data_in.eq(self.data_in)]
+                    m.d.comb += [
+                        self.data_out.eq(1),
+                    ]
+                    m.d.sync += [
+                        data_in.eq(self.data_in),
+                        cycle_counter.eq(1),
+                    ]
                     m.next = "STREAMING"
+
+                with m.Else():
+                    m.d.sync += [
+                        cycle_counter.eq(0),
+                    ]
             
             with m.State("STREAMING"):
                 m.d.sync += [
                     cycle_counter.eq(cycle_counter + 1),
                 ]
 
-                with m.If(~self.enable):
-                    m.next = "IDLE"
-
                 with m.If(cycle_counter < Mux(current_bit, CYCLE_LEN_HIGH, CYCLE_LEN_LOW)):
                     m.d.comb += self.data_out.eq(1)
                 with m.Else():
                     m.d.comb += self.data_out.eq(0)
 
-                with m.If(cycle_counter >= CYCLE_LEN):
+                with m.If(cycle_counter >= CYCLE_LEN - 1):
                     m.d.sync += [
                         cycle_counter.eq(0),
                         bit_counter.eq(bit_counter + 1),
                     ]
 
-                    with m.If(bit_counter >= self.word_size):
+                with m.If(bit_counter >= self.word_width):
+                    with m.If(self.enable == 0):
                         m.next = "IDLE"
+                    with m.Else():
+                        m.d.sync += [
+                            bit_counter.eq(0),
+                            data_in.eq(self.data_in),
+                        ]
 
         return m
 

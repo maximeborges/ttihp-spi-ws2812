@@ -5,7 +5,6 @@ from amaranth.lib.wiring import In, Out
 from .spi import SPICommandInterface
 from .ws2811 import WS2811
 
-
 class Top(Elaboratable):
     """
     Top-level module containing the WS2812 driver and SPI interface.
@@ -20,49 +19,62 @@ class Top(Elaboratable):
     copi : Signal, in
         SPI data input
     out : Signal, out
-        Up to 16x WS2812 outputs
+        Up to 8x WS2812 outputs
     """
 
-    # clk: In(1)
-    # rst: In(1)
-    # cs: In(1)
-    # copi: In(1)
-    # out0: Out(1)
-
     def __init__(self):
-        self.clk = Signal(1)
-        self.rst = Signal(1)
-
         self.cs = Signal(1)
         self.copi = Signal(1)
 
-        self.out0 = Signal(1)
+        self.out = Signal(8)
 
         self.word_size = Signal(6)
 
         self.spi = SPICommandInterface()
-        self.led0 = WS2811()
+        self.led_strips = [WS2811(), WS2811(), WS2811(), WS2811(), WS2811(), WS2811(), WS2811(), WS2811()]
+
+        self.strip_count = Signal(4)
+        self.strip_counter = Signal(4, init=0)
 
         super().__init__()
 
     def elaborate(self, platform):
         m = Module()
 
+        m.submodules.spi = self.spi
+
         m.d.comb += [
+            self.strip_count.eq(8),
+            self.word_size.eq(24),
             self.spi.copi.eq(self.copi),
             self.spi.cs.eq(self.cs),
-            self.spi.clk.eq(self.clk),
-            self.led0.clk.eq(self.clk),
-            
-            self.out0.eq(self.led0.data_out),
 
-            self.led0.word_size.eq(self.word_size),
             self.spi.word_width.eq(self.word_size),
-            self.led0.enable.eq(self.spi.word_complete),
-            self.led0.data_in.eq(self.spi.word_received),
         ]
+        for i in range(8):
+            m.d.comb += [
+                self.led_strips[i].enable.eq(0),
+                self.led_strips[i].word_width.eq(self.word_size),
+                self.out[i].eq(self.led_strips[i].data_out),
+            ]
+            m.submodules += self.led_strips[i]
 
-        m.submodules.led1 = self.led0
-        m.submodules.spi = self.spi
+        with m.Switch(self.strip_counter):
+            for i in range(8):
+                with m.Case(i):
+                    m.d.comb += [
+                        self.led_strips[i].enable.eq(self.spi.word_complete),
+                        self.led_strips[i].data_in.eq(self.spi.word_received),
+                    ]
+
+        with m.If(self.spi.word_complete):
+            with m.If(self.strip_counter < self.strip_count - 1):
+                m.d.sync += [
+                    self.strip_counter.eq(self.strip_counter + 1)
+                ]
+            with m.Else():
+                m.d.sync += [
+                    self.strip_counter.eq(0)
+                ]
 
         return m
