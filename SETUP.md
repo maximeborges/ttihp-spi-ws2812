@@ -21,7 +21,7 @@ sudo apt-get update && sudo apt-get install -y iverilog
 ### 2. **Python Dependencies**
 ```bash
 # Install all required Python packages:
-pip install -r requirements.txt
+uv sync
 
 # This includes:
 # - amaranth (HDL design)
